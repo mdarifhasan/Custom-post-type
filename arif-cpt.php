@@ -20,6 +20,6 @@ if(!defined('Arif_CPT_DIR_PATH_URI')){
 require_once  Arif_CPT_DIR_PATH.'/inc/helpers/autoloader.php';
 
 function arif_cpt_get_instance(){
-    Arif_CPT\Inc\Book_CPT::get_instance();
+    Arif_CPT\Inc\CPT::get_instance();
 }
 arif_cpt_get_instance();

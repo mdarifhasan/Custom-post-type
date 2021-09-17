@@ -11,12 +11,12 @@ use Arif_CPT\Inc\Traits\Singleton;
 
 class Book_CPT{
     use Singleton;
-    protected function __construct(){
+    public function __construct(){
         // Load Actions and filter hook function
         $this->setup_hooks();
 
     }
-    protected function setup_hooks(){
+    public function setup_hooks(){
         /**
          * Actions And Filter
          */
