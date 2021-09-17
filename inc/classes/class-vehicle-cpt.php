@@ -22,7 +22,13 @@ class Vehicle_CPT{
         add_action('init',[$this,'register_cpt']);//Register post type
         add_action('add_meta_boxes',[$this,'cpt_meta_boxes']);//Meta box for post type
         add_action('save_post',[$this,'cpt_meta_data_save']);//Save meta box data
+        add_action('manage_vehicle_posts_columns',[$this,'cpt_custom_columns']);//Custom columns for cpt
+        add_action('manage_vehicle_posts_custom_column',[$this,'cpt_custom_column_data_render']);//Custom column data render
+        add_filter('manage_edit-vehicle_sortable_columns',[$this,'cpt_columns_sorting']);//Custom column sorting
     }
+    /**
+     * Register our custom post type
+     */
     public function register_cpt(){
         $labels=[
                 'name'                  => esc_html__( 'Vehicles', 'arif-cpt' ),
@@ -68,6 +74,9 @@ class Vehicle_CPT{
         ];
         register_post_type( 'vehicle',$args );
     }
+    /**
+     * Meta boxes for custom post type
+     */
     public function cpt_meta_boxes(){
         add_meta_box( 
             'vehicle_data', 
@@ -78,6 +87,9 @@ class Vehicle_CPT{
             'high' 
         );
     }
+    /**
+     * Meta box html structure and data show in the form
+     */
     public function vehicle_meta_html($postID){
         $postID=get_the_ID(  );
         $vehicle_made=get_post_meta( $postID, 'vehicle_made_key',true );
@@ -116,6 +128,9 @@ class Vehicle_CPT{
             </p>
         <?php
     }
+    /**
+     * Meta box data save
+     */
     public function cpt_meta_data_save(){
         $post_id=get_the_ID(  );
         $vehicle_made=isset($_POST['vehicle_made'])?$_POST['vehicle_made']:'';
@@ -128,5 +143,44 @@ class Vehicle_CPT{
         update_post_meta( $post_id,'vehicle_price_key',$vehicle_price );
         update_post_meta( $post_id,'vehicle_technician_key',$vehicle_technician );
     }
+    /**
+     * Custom column for CPT.
+     */
+    public function cpt_custom_columns($columns){
+        $columns=[
+            'cb'                    =>'<input type="checkbox"/>',
+            'title'                 =>'Vehicle Title',
+            'vehicle_price'         =>'Vehicle Price',
+            'vehicle_technician'    =>'Assigned Technican',
+            'date'                  =>'Date'
+        ];
+        return $columns;
+
+    }
+    /**
+     * Custom column data render to show in the table
+     */
+    public function cpt_custom_column_data_render($column){
+        switch($column){
+
+            case 'vehicle_price':
+                $vehicle_price=get_post_meta(get_the_ID(  ),'vehicle_price_key',true);
+                echo $vehicle_price;
+                break;
+            case 'vehicle_technician':
+                $vehicle_technician=get_post_meta(get_the_ID(  ),'vehicle_technician_key',true);
+                echo $vehicle_technician;
+                break;
+        }
+    }
+    /**
+     * Custom column sorting ASC OR DESC
+     */
+    public function cpt_columns_sorting($columns){
+        $columns['vehicle_price'] = 'vehicle_price';
+        $columns['vehicle_technician'] = 'vehicle_technician';
+        return $columns;
+    }
+           
 
 }
