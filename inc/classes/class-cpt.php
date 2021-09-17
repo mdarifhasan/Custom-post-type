@@ -17,6 +17,9 @@ class CPT{
 
     }
     public function setup_hooks(){
+        /**
+         * Load all classes
+         */
         Book_CPT::get_instance();
         Vehicle_CPT::get_instance();
     }
