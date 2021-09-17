@@ -280,7 +280,7 @@ class Book_CPT{
 
         if ($typenow == $post_type) {
             $selected      = isset($_GET[$taxonomy]) ? $_GET[$taxonomy] : '';
-            wp_dropdown_categories(array(
+            wp_dropdown_categories([
                 'show_option_all' => 'Show all ',
                 'taxonomy'        =>$taxonomy,
                 'name'            => $taxonomy,
@@ -289,7 +289,7 @@ class Book_CPT{
                 'show_count'      => true,
                 'hide_empty'      => true,
                 
-            ));
+            ]);
         };
     }
     public function cat_filter_box_query($query){

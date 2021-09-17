@@ -25,6 +25,9 @@ class Vehicle_CPT{
         add_action('manage_vehicle_posts_columns',[$this,'cpt_custom_columns']);//Custom columns for cpt
         add_action('manage_vehicle_posts_custom_column',[$this,'cpt_custom_column_data_render']);//Custom column data render
         add_filter('manage_edit-vehicle_sortable_columns',[$this,'cpt_columns_sorting']);//Custom column sorting
+        add_action('init',[$this,'cpt_taxonomy']);//Registering category
+        add_action('restrict_manage_posts',[$this,'category_filter_box_layout']);//Taxonomy filter box layout
+        add_action('parse_query',[$this,'category_filter_data_query']);
     }
     /**
      * Register our custom post type
@@ -174,12 +177,57 @@ class Vehicle_CPT{
         }
     }
     /**
-     * Custom column sorting ASC OR DESC
+     * Custom column sorting by ASC OR DESC
      */
     public function cpt_columns_sorting($columns){
         $columns['vehicle_price'] = 'vehicle_price';
         $columns['vehicle_technician'] = 'vehicle_technician';
         return $columns;
+    }
+    /**
+     * Custom taxonomy register for our CPT
+     */
+    public function cpt_taxonomy(){
+        $args=[
+            'label'             =>esc_html__( 'Vehicle Category','arif-cpt' ),
+            'rewrite'           => ['slug' => 'vehicle_categories' ],
+            'hierarchical'      => true,
+            'query_var'         =>true,
+            'show_in_rest'      =>true
+        ];
+        register_taxonomy( 'vahicle_category','vehicle', $args );
+    }
+    public function category_filter_box_layout(){
+        global $typenow;
+        $post_type='vehicle';
+        $taxonomy = 'vahicle_category';
+        
+        //Check if the type is vehicle or not
+        if($typenow == $post_type){
+            $selected= isset($_GET[$taxonomy]) ? $_GET[$taxonomy] : '';
+            wp_dropdown_categories( [
+                'show_option_all'       => 'Show all',
+                'name'                  =>$taxonomy,
+                'taxonomy'              =>$taxonomy,
+                'show_count'            =>true,
+                'orderby'               =>'name',
+                'selected'              =>$selected
+            ] );
+        }
+
+    }
+    public function category_filter_data_query($query){
+        global $typenow;
+        global $pagenow;
+        $query_variable=&$query->query_vars;
+        $post_type='vehicle';
+        $taxonomy='vahicle_category';
+        if($typenow == $post_type && $pagenow == 'edit.php' && isset($query_variable[$taxonomy]) && is_numeric($query_variable[$taxonomy]) && $query_variable[$taxonomy]!=0){
+            
+            $term_details=get_term_by('id', $query_variable[$taxonomy],$taxonomy ) ;
+            $query_variable[$taxonomy]=$term_details->slug;
+            
+        }
     }
            
 
