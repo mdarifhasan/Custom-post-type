@@ -34,7 +34,7 @@ class Book_CPT{
 
     }
     public function register_cpt(){
-        $labels = array(
+        $labels = [
             'name'                  => esc_html__( 'Recipes', 'arif-cpt' ),
             'singular_name'         => esc_html__( 'Recipe',  'arif-cpt' ),
             'menu_name'             => esc_html__( 'Recipes',  'arif-cpt' ),
@@ -59,7 +59,7 @@ class Book_CPT{
             'filter_items_list'     => esc_html__( 'Filter recipes list', 'arif-cpt' ),
             'items_list_navigation' => esc_html__( 'Recipes list navigation',  'arif-cpt' ),
             'items_list'            => esc_html__( 'Recipes list','arif-cpt' ),
-        );     
+        ];     
         $args = [
             'labels'             => $labels,
             'description'        => 'Recipe custom post type.',
