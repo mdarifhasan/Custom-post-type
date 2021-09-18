@@ -29,6 +29,8 @@ class Vehicle_CPT{
         add_action('restrict_manage_posts',[$this,'category_filter_box_layout']);//Taxonomy filter box layout
         add_action('parse_query',[$this,'category_filter_data_query']);
         add_action('init',[$this,'user_role']);// Add user role for vehicle technician
+        add_action('restrict_manage_posts',[$this,'tech_filter_box_layout']);//Technician filter box layout
+        add_filter('parse_query',[$this,'tech_filter_box_query']);//Technician filter box query
     }
     /**
      * Register our custom post type
@@ -269,9 +271,30 @@ class Vehicle_CPT{
         $tech_role->add_cap('edit_vehicles');
         $tech_role->add_cap('edit_vehicle');
         get_role('administrator')->add_cap('publish_vehicles');
-        
 
-
+    }
+    public function tech_filter_box_layout(){
+        global $typenow;
+        $post_type='vehicle';
+        if($typenow == $post_type ){
+            $selected_tech=isset($_GET['filter_by_technician'])?$_GET['filter_by_technician']:'';
+            wp_dropdown_users( [
+                'show_option_none'       =>'Select Technician',
+                'name'                  =>'filter_by_technician',
+                'selected'              =>$selected_tech,
+                'role'                  =>'technician'
+            ] );
+        }
+    }
+    public function tech_filter_box_query($query){
+        global $typenow;
+        global $pagenow;
+        $post_type='vehicle';
+        $selected_tech=isset($_GET['filter_by_technician'])?$_GET['filter_by_technician']:'';
+        if($typenow == $post_type && $pagenow == 'edit.php' && !empty($selected_tech)){
+            $query->query_vars['meta_key']='vehicle_technician_key';
+            $query->query_vars['meta_value']=$selected_tech;
+        }
     }
            
 
