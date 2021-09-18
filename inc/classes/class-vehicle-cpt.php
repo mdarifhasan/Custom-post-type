@@ -28,6 +28,7 @@ class Vehicle_CPT{
         add_action('init',[$this,'cpt_taxonomy']);//Registering category
         add_action('restrict_manage_posts',[$this,'category_filter_box_layout']);//Taxonomy filter box layout
         add_action('parse_query',[$this,'category_filter_data_query']);
+        add_action('init',[$this,'user_role']);// Add user role for vehicle technician
     }
     /**
      * Register our custom post type
@@ -73,7 +74,8 @@ class Vehicle_CPT{
             'hierarchical'       => false,
             'menu_position'      => 20,
             'supports'           => [ 'title' ],
-            'show_in_rest'       => true
+            'show_in_rest'       => true,
+            'capability_type'    =>'vehicle'
         ];
         register_post_type( 'vehicle',$args );
     }
@@ -98,7 +100,11 @@ class Vehicle_CPT{
         $vehicle_made=get_post_meta( $postID, 'vehicle_made_key',true );
         $vehicle_model=get_post_meta( $postID, 'vehicle_model_key',true );
         $vehicle_price=get_post_meta( $postID, 'vehicle_price_key',true );
-        $vehicle_technician=get_post_meta( $postID, 'vehicle_technician_key',true );
+        $vehicle_tech_id=get_post_meta( $postID, 'vehicle_technician_key',true );
+        $tech_users=get_users(['role'=>'technician']);
+        $selected='';
+
+        
 
         ?>
             <!-- Vehicle made -->
@@ -127,8 +133,24 @@ class Vehicle_CPT{
                 <label for="<?php echo esc_attr( 'vehicle_technician' ) ?>">
                     <?php esc_html_e( 'Assigned technician','arif-cpt' ) ?>
                 </label>
-                <input class="widefat" type="text" name="<?php echo esc_attr('vehicle_technician') ?>" id="<?php echo esc_attr('vehicle_technician') ?>" value="<?php echo esc_attr( $vehicle_technician ) ?>">
+                <select class="widefat" name="dd_vehicle_technician" id="vehicle_technician">
+                    <?php
+                        if(!empty($tech_users)){
+                            foreach($tech_users as $index=>$user){
+                                if($vehicle_tech_id == $user->ID){
+                                    $selected='selected="selected"';
+                                }
+                                ?> 
+                                    <option <?php echo esc_attr($selected); ?> value="<?php echo esc_attr($user->ID) ?>">
+                                            <?php echo esc_html__( $user->display_name, 'arif-cpt' ) ?>
+                                    </option>
+                                <?php
+                            }
+                        }
+                    ?>
+                </select>
             </p>
+            
         <?php
     }
     /**
@@ -139,7 +161,7 @@ class Vehicle_CPT{
         $vehicle_made=isset($_POST['vehicle_made'])?$_POST['vehicle_made']:'';
         $vehicle_model=isset($_POST['vehicle_model'])?$_POST['vehicle_model']:'';
         $vehicle_price=isset($_POST['vehicle_price'])?$_POST['vehicle_price']:'';
-        $vehicle_technician=isset($_POST['vehicle_technician'])?$_POST['vehicle_technician']:'';
+        $vehicle_technician=isset($_REQUEST['dd_vehicle_technician'])?$_REQUEST['dd_vehicle_technician']:'';
 
         update_post_meta( $post_id,'vehicle_made_key',$vehicle_made );
         update_post_meta( $post_id,'vehicle_model_key',$vehicle_model );
@@ -228,6 +250,17 @@ class Vehicle_CPT{
             $query_variable[$taxonomy]=$term_details->slug;
             
         }
+    }
+    public function user_role(){
+        add_role('technician','Technician');
+        
+        $tech_role=get_role('technician');
+        $tech_role->add_cap('read');
+        $tech_role->add_cap('edit_vehicles');
+        $tech_role->add_cap('edit_vehicle');
+        
+
+
     }
            
 

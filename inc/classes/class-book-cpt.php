@@ -159,6 +159,8 @@ class Book_CPT{
                                 ?>
                             </select>
                         <?php
+                    }else{
+                        echo esc_html__( 'There is no author', 'arif-cpt' );
                     }
                 ?>
             </p>
@@ -235,7 +237,7 @@ class Book_CPT{
         if($typenow=='recipe'){
             $selected_author_id=isset($_GET['filter_by_author'])?intval($_GET['filter_by_author']):'';
             wp_dropdown_users( [
-                'show_option_none'=>'Select writer',
+                'show_option_none'=>'Select writers',
                 'role'            =>'author',
                 'id'              =>'dd-filter-author-id',
                 'name'            =>'filter_by_author',
