@@ -135,7 +135,7 @@ class Book_CPT{
         $postID=get_the_ID(  );
         $selected_author_value=get_post_meta($postID,'dd_recipe_author_key',true);
         $users=get_users(['role'=>'author']);
-        $selected='';
+        
         ?>
             <p>
                 <label for="<?php esc_attr_e('dd_recipe_author','arif-cpt') ?>">
@@ -149,6 +149,8 @@ class Book_CPT{
                                     foreach($users as $index=>$user){
                                         if($selected_author_value == $user->ID){
                                             $selected='selected="selected"';
+                                        }else{
+                                            $selected='';
                                         }
                                         ?>
                                             <option value="<?php echo esc_attr( $user->ID ) ?>" <?php echo esc_attr($selected); ?>>

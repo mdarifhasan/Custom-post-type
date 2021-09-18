@@ -102,7 +102,7 @@ class Vehicle_CPT{
         $vehicle_price=get_post_meta( $postID, 'vehicle_price_key',true );
         $vehicle_tech_id=get_post_meta( $postID, 'vehicle_technician_key',true );
         $tech_users=get_users(['role'=>'technician']);
-        $selected='';
+        
 
         
 
@@ -134,12 +134,17 @@ class Vehicle_CPT{
                     <?php esc_html_e( 'Assigned technician','arif-cpt' ) ?>
                 </label>
                 <select class="widefat" name="dd_vehicle_technician" id="vehicle_technician">
+                    <option value="#"><?php echo 'Select technician' ?></option>
                     <?php
                         if(!empty($tech_users)){
                             foreach($tech_users as $index=>$user){
-                                if($vehicle_tech_id == $user->ID){
-                                    $selected='selected="selected"';
-                                }
+                                
+                                    if($vehicle_tech_id == $user->ID){
+                                        $selected='selected="selected"';
+                                    }else{
+                                        $selected='';
+                                    }
+                            
                                 ?> 
                                     <option <?php echo esc_attr($selected); ?> value="<?php echo esc_attr($user->ID) ?>">
                                             <?php echo esc_html__( $user->display_name, 'arif-cpt' ) ?>
@@ -194,7 +199,12 @@ class Vehicle_CPT{
                 break;
             case 'vehicle_technician':
                 $vehicle_technician=get_post_meta(get_the_ID(  ),'vehicle_technician_key',true);
-                echo $vehicle_technician;
+                $tech_users=get_users(['role'=>'technician']);
+                foreach($tech_users as $index=>$user){
+                    if($vehicle_technician == $user->ID){
+                        echo $user->display_name;
+                    }
+                }
                 break;
         }
     }
@@ -258,6 +268,7 @@ class Vehicle_CPT{
         $tech_role->add_cap('read');
         $tech_role->add_cap('edit_vehicles');
         $tech_role->add_cap('edit_vehicle');
+        get_role('administrator')->add_cap('publish_vehicles');
         
 
 
